@@ -1,0 +1,32 @@
+name: Daily Indian Law Updates Email
+
+on:
+  schedule:
+    # 8:00 AM IST = 2:30 AM UTC  (IST is UTC+5:30)
+    - cron: "30 2 * * *"
+
+  # Allows you to run this manually from the Actions tab to test
+  workflow_dispatch:
+
+jobs:
+  send-law-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Run law updates script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python send_law_updates.py
